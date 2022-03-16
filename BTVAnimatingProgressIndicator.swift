@@ -40,6 +40,8 @@ import Cocoa
   - orientation: `OrientationDescription` to specify where the zero point is on the circle.
   - repeats: `Bool` to specify whether animation restarts.
   - duration: `TimeInterval` specifying how long animation takes
+  - isBordered: `Bool` to specify whether to display a thin border around the view
+  - colour: `NSColor` of the bar
  
  */
 class BTVAnimatingProgressIndicator: NSView {
@@ -56,6 +58,12 @@ class BTVAnimatingProgressIndicator: NSView {
     var toValue: CGFloat = 0.0
     
     var repeats: Bool = false
+    
+    /// To display a border, or not
+    var isBordered: Bool = true
+    
+    /// Colour of bar
+    var colour: NSColor = NSColor(calibratedRed: 0.000, green: 0.275, blue: 0.286, alpha: 1.00)
     
     /// This is where the progress indicator will start animating (0 - 1)
     var fromValue: CGFloat = 1.0
@@ -192,13 +200,20 @@ class BTVAnimatingProgressIndicator: NSView {
         NSColor.clear.set()
         dirtyRect.fill()
         
+        colour.set()
+        
+        if isBordered {
+            let border: NSBezierPath = NSBezierPath(roundedRect: dirtyRect.insetBy(dx: 2, dy: 2), xRadius: 2.0, yRadius: 2.0)
+            border.lineWidth = 1
+            border.stroke()
+        }
+        
         let arc = NSBezierPath()
         let centre: NSPoint = NSPoint(x: dirtyRect.midX, y: dirtyRect.midY)
 
-        arc.appendArc(withCenter: centre, radius: (min(dirtyRect.width, dirtyRect.height) / 2) * 0.8, startAngle: toAngle, endAngle: fromAngle, clockwise: true)
-        arc.lineWidth = 10.0
+        arc.appendArc(withCenter: centre, radius: (min(dirtyRect.width, dirtyRect.height) / 2) * 0.7, startAngle: toAngle, endAngle: fromAngle, clockwise: true)
+        arc.lineWidth = 5.0
         arc.lineCapStyle = .round
-        NSColor(calibratedRed: 0.000, green: 0.275, blue: 0.286, alpha: 1.00).set()
         arc.stroke()
         
         perform(#selector(redisplay), with: nil, afterDelay: 0.0)
